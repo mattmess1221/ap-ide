@@ -40,6 +40,7 @@ public class GenerateIdeaApt extends AptTask {
                 doc = builder.newDocument();
                 Element project = doc.createElement(PROJECT);
                 Element component = doc.createElement(COMPONENT);
+                component.setAttribute("name", "CompilerConfiguration");
                 Element annotationProcessor = doc.createElement(ANNOTATION_PROCESSING);
                 profile = doc.createElement(PROFILE);
                 profile.setAttribute("default", "true");
@@ -57,7 +58,7 @@ public class GenerateIdeaApt extends AptTask {
                 // parse the xml
                 doc = builder.parse(compilerXml);
                 profile = (Element) doc.getElementsByTagName(PROFILE).item(0);
-            profile.setAttribute("enabled", "true");
+                profile.setAttribute("enabled", "true");
             }
 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -65,7 +66,7 @@ public class GenerateIdeaApt extends AptTask {
             // make pretty
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount",
-                    Integer.toString(4));
+                    Integer.toString(2));
 
             // write it
             compilerXml.getParentFile().mkdirs();

@@ -11,7 +11,6 @@ import org.gradle.api.Task;
  * {@code idea} tasks respectively.
  *
  * @author Matthew Messinger
- *
  */
 public class KappaPlugin implements Plugin<Project> {
 
