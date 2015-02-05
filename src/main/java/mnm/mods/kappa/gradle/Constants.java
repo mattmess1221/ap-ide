@@ -1,6 +1,6 @@
 package mnm.mods.kappa.gradle;
 
-public interface Constants {
+public final class Constants {
 
     public static final String CONFIG_COMPILE = "compile";
     public static final String CONFIG_APT_COMPILE = "aptCompile";

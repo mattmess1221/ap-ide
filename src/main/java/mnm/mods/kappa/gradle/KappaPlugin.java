@@ -4,27 +4,29 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 
+/**
+ * Gradle plugin used to enable annotation processing in Eclipse and IntelliJ.
+ * Will automatically add any processors found in the compile configuration.
+ * Adds tasks {@code eclipseApt} and {@code ideaApt} to the {@code eclipse} and
+ * {@code idea} tasks respectively.
+ *
+ * @author Matthew Messinger
+ *
+ */
 public class KappaPlugin implements Plugin<Project> {
-
-    Project project;
 
     @Override
     public void apply(Project project) {
-        this.project = project;
         project.getPlugins().apply("eclipse");
         project.getPlugins().apply("idea");
         project.getConfigurations().create(Constants.CONFIG_APT_COMPILE);
 
-        Task find = project.getTasks().create("findProcessors", FindProcessorsTask.class);
-
+        // add eclipseApt task to eclipse.
         Task eclipseApt = project.getTasks().create("eclipseApt", GenerateEclipseApt.class);
-        eclipseApt.dependsOn(find);
         project.getTasks().getByName("eclipse").dependsOn(eclipseApt);
 
-        Task ideaApt = project.getTasks().create("ideaApt", IdeaApt.class);
-        ideaApt.dependsOn(find);
+        // add ideaApt task to idea.
+        Task ideaApt = project.getTasks().create("ideaApt", GenerateIdeaApt.class);
         project.getTasks().getByName("idea").dependsOn(ideaApt);
-
-
     }
 }
