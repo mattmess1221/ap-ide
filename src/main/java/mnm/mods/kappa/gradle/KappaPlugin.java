@@ -15,11 +15,13 @@ import org.gradle.api.Task;
  */
 public class KappaPlugin implements Plugin<Project> {
 
+    public static final String CONFIG_APT_COMPILE = "aptCompile";
+
     @Override
     public void apply(Project project) {
         project.getPlugins().apply("eclipse");
         project.getPlugins().apply("idea");
-        project.getConfigurations().create(Constants.CONFIG_APT_COMPILE);
+        project.getConfigurations().create(CONFIG_APT_COMPILE);
 
         // add eclipseApt task to eclipse.
         Task eclipseApt = project.getTasks().create("eclipseApt", GenerateEclipseApt.class);

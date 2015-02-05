@@ -14,8 +14,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.Action;
-import org.gradle.api.GradleException;
-import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
 import org.w3c.dom.Document;
@@ -23,8 +21,21 @@ import org.w3c.dom.Element;
 
 public class GenerateEclipseApt extends AptTask {
 
+    private static final String ECLIPSE_FACTORYPATH_FILE = ".factorypath";
+    private static final String ECLIPSE_FACTORYPATH = "factorypath";
+    private static final String ECLIPSE_FACTORYPATH_ENTRY = "factorypathentry";
+
+    private static final String ECLIPSE_APT_PREFS_FILE = ".settings/org.eclipse.jdt.apt.core.prefs";
+    private static final String ECLIPSE_APT_PREFS_CONTENTS = ""
+            + "eclipse.preferences.version=1\n"
+            + "org.eclipse.jdt.apt.aptEnabled=true\n"
+            + "org.eclipse.jdt.apt.genSrcDir=.apt_generated\n"
+            + "org.eclipse.jdt.apt.reconcileEnabled=true";
+
+    private static final String ECLIPSE_PROCESS_ANNOTATIONS = "org.eclipse.jdt.core.compiler.processAnnotations";
+
     @Override
-    public void execute(Task task) {
+    public void doTask() {
         enableAnnotations();
         createAptPrefs();
         createFactorypath();
@@ -36,7 +47,7 @@ public class GenerateEclipseApt extends AptTask {
         eclipse.getJdt().getFile().getTransformer().addAction(new Action<Properties>() {
             @Override
             public void execute(Properties properties) {
-                properties.setProperty(Constants.ECLIPSE_PROCESS_ANNOTATIONS, "enabled");
+                properties.setProperty(ECLIPSE_PROCESS_ANNOTATIONS, "enabled");
             }
         });
     }
@@ -45,8 +56,8 @@ public class GenerateEclipseApt extends AptTask {
         // create the apt properties file.
         // TODO don't replace if exists. May remove commons-io dependency
         try {
-            File file = getProject().file(Constants.ECLIPSE_APT_PREFS_FILE);
-            FileUtils.writeStringToFile(file, Constants.ECLIPSE_APT_PREFS_CONTENTS);
+            File file = getProject().file(ECLIPSE_APT_PREFS_FILE);
+            FileUtils.writeStringToFile(file, ECLIPSE_APT_PREFS_CONTENTS);
         } catch (IOException e) {
             throwError(e);
         }
@@ -58,12 +69,12 @@ public class GenerateEclipseApt extends AptTask {
         try {
             // factorypath
             Configuration gen =
-                    getProject().getConfigurations().getByName(Constants.CONFIG_APT_COMPILE);
+                    getProject().getConfigurations().getByName(KappaPlugin.CONFIG_APT_COMPILE);
             Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 
-            Element factorypath = doc.createElement(Constants.ECLIPSE_FACTORYPATH);
+            Element factorypath = doc.createElement(ECLIPSE_FACTORYPATH);
             for (File f : gen) {
-                Element entry = doc.createElement(Constants.ECLIPSE_FACTORYPATH_ENTRY);
+                Element entry = doc.createElement(ECLIPSE_FACTORYPATH_ENTRY);
                 entry.setAttribute("kind", "EXTJAR");
                 entry.setAttribute("id", f.getAbsolutePath());
                 entry.setAttribute("enabled", "true");
@@ -80,14 +91,11 @@ public class GenerateEclipseApt extends AptTask {
             // write it
             Source source = new DOMSource(doc);
             StreamResult result =
-                    new StreamResult(getProject().file(Constants.ECLIPSE_FACTORYPATH_FILE));
+                    new StreamResult(getProject().file(ECLIPSE_FACTORYPATH_FILE));
             transformer.transform(source, result);
         } catch (Exception e) {
             throwError(e);
         }
     }
 
-    private void throwError(Throwable t) {
-        throw new GradleException("Build failed while enabling Eclipse Apt", t);
-    }
 }
