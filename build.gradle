@@ -7,12 +7,3 @@ targetCompatibility=1.6
 archivesBaseName = "Kappa-gradle"
 group = "mnm.mods.kappa"
 version = "1.0"
-
-repositories {
-	mavenCentral()
-}
-
-dependencies {
-	compile gradleApi()
-	compile "commons-io:commons-io:2.1"
-}

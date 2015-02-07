@@ -7,10 +7,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.specs.Spec;
-import org.gradle.api.tasks.StopExecutionException;
 import org.gradle.api.tasks.TaskAction;
 
 public abstract class AptTask extends DefaultTask implements Spec<Task> {
@@ -81,8 +81,6 @@ public abstract class AptTask extends DefaultTask implements Spec<Task> {
     }
 
     protected void throwError(Throwable e) {
-        final String msg = "Unable to enable the IDE's annotation processing";
-        getLogger().info(msg, e);
-        throw new StopExecutionException(msg);
+        throw new GradleException("Unable to enable the IDE's annotation processing", e);
     }
 }
