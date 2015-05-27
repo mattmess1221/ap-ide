@@ -1,4 +1,5 @@
 apply plugin: 'java-gradle-plugin'
+apply plugin: 'groovy'
 apply plugin: 'eclipse'
 
 sourceCompatibility=1.6
@@ -6,4 +7,4 @@ targetCompatibility=1.6
 
 archivesBaseName = "Kappa-gradle"
 group = "mnm.mods.kappa"
-version = "1.0"
+version = "1.0.1"
