@@ -1,18 +1,10 @@
-###Kappa - Gradle
-This is a plugin for Gradle that enables Eclipse APT
- and automatically adds annotation processors from
- the classpath. To use, put this in your builscript.
+###ap-ide
+This is a plugin for Gradle that enables annotation
+ processing in Eclipse and IntelliJ and automatically
+ adds annotation processors from the classpath. To
+ use, put this in your builscript.
 ```
-buildscript {
-    dependencies {
-        classpath files("path/to/Kappa-gradle-1.0.jar")
-    }
-}
-apply plugin: 'kappa'
-
-dependencies {
-    compile files("path/to/Kappa-core-1.0.jar")
+plugins {
+	id 'mnm.gradle.ap-ide' version '1.0.2'
 }
 ```
-It automatically adds eclipse and idea, so there is
- no need to apply those.
