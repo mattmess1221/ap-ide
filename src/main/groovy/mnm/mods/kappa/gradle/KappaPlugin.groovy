@@ -30,12 +30,6 @@ class KappaPlugin implements Plugin<Project> {
 
             configurations.create CONFIG_FACTORY
 
-            afterEvaluate {
-                project.getConfigurations()['compile'].files
-                        .findAll {isProcessor it }
-                        .each { project.dependencies.add CONFIG_FACTORY, project.files(it) }
-            }
-
             // add eclipseApt task to eclipse.
             def eclipseApt = tasks.create "eclipseApt", GenerateEclipseApt
             tasks['eclipse'].dependsOn eclipseApt

@@ -9,7 +9,7 @@ targetCompatibility=1.6
 
 archivesBaseName = "ap-ide"
 group = "mnm.mods.kappa"
-version = "1.0.2"
+version = "1.0.3"
 
 repositories.jcenter()
 
