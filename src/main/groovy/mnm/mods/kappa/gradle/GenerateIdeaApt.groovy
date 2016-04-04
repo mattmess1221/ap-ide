@@ -9,14 +9,9 @@ import org.gradle.api.tasks.OutputFile
 class GenerateIdeaApt extends AptTask {
 
     private static final String COMPILER_XML = '.idea/compiler.xml'
-    private static final String PROJECT = 'project'
-    private static final String COMPONENT = 'component'
-    private static final String ANNOTATION_PROCESSING = 'annotationProcessing'
-    private static final String PROFILE = 'profile'
-    private static final String PROCESSOR_PATH = 'processorPath'
 
     @OutputFile
-    private File compilerXml = project.rootProject.file COMPILER_XML
+    private File compilerXml = project.file COMPILER_XML
 
     @Override
     void doTask() {
@@ -24,23 +19,28 @@ class GenerateIdeaApt extends AptTask {
     }
 
     private void enableProcessing() {
-        if (compilerXml.exists() && compilerXml.size() > 0) {
-            // save the current xml
-            def xml = new XmlSlurper().parse compilerXml
-            def compiler =  xml."$COMPONENT".find {it.@name == 'CompilerConfiguration'}
-            def anno = compiler."$ANNOTATION_PROCESSING"
-            if (anno != null && !anno.isEmpty()) {
-                anno[0]."$PROFILE".find {it.@name = 'Default'}?.@enabled = 'true'
-            } else {
-                compiler.appendNode {
-                    "$ANNOTATION_PROCESSING" {
-                        "$PROFILE"('default':'true',name:'Default',enabled:'true') {
-                            "$PROCESSOR_PATH"(useAttribute:'true')
-                        }
+        def node = {
+            profile('default': 'true', name: 'Default', enabled: 'true') {
+                options.each { key, val ->
+                    option(name: key, value: val)
+                }
+                processorPath(useClasspath: 'false') {
+                    factory.each { File f ->
+                        entry(name: f.absolutePath)
                     }
                 }
             }
-
+        }
+        if (compilerXml.exists() && compilerXml.size() > 0) {
+            // save the current xml
+            def xml = new XmlSlurper().parse compilerXml
+            def compiler =  xml.component.find {it.'@name' == 'CompilerConfiguration'}
+            if (compiler.annotationProcessing != null)
+                compiler.annotationProcessing.replaceNode {
+                    annotationProcessing node
+                }
+            else
+                compiler.annotationProcessing node
             compilerXml.withWriter {
                 XmlUtil.serialize new StreamingMarkupBuilder().bind { mkp.yield xml }, it
             }
@@ -50,20 +50,9 @@ class GenerateIdeaApt extends AptTask {
 
             def xml = new MarkupBuilder(new FileWriter(compilerXml))
 
-            def annotation = ANNOTATION_PROCESSING
-            def profile = PROFILE
-            def processorPath = PROCESSOR_PATH
-
-            xml."$PROJECT" {
-                "$COMPONENT"(name: 'CompilerConfiguration') {
-                    "$annotation" {
-                        "$profile"(
-                                'default': 'true',
-                                name: 'Default',
-                                enabled: 'true') {
-                                    "$processorPath"(useAttribute: 'true')
-                                }
-                    }
+            xml.project {
+                component(name: 'CompilerConfiguration') {
+                    annotationProcessing node
                 }
             }
         }

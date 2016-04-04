@@ -8,7 +8,9 @@ import org.gradle.api.tasks.TaskAction
 abstract class AptTask extends DefaultTask {
 
     @Input
-    protected Configuration factory = project.configurations[KappaPlugin.CONFIG_FACTORY]
+    def factory = project.configurations[KappaPlugin.CONFIG_PROCESSOR]
+    @Input
+    def options = project.extensions[KappaPlugin.EXT_PROCESSOR].options
 
     AptTask() {
         // make sure we need to do this.
