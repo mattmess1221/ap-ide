@@ -23,6 +23,6 @@ To tell the ide what options to use for your processor, use the
 This example uses forge gradle to get srg files for mixin
 ```groovy
 processor {
-    options.reobfSrgFile = project.tasks.geSrgs.mcpToSrg.path
+    options.reobfSrgFile = project.tasks.genSrgs.mcpToSrg.path
 }
 ```
